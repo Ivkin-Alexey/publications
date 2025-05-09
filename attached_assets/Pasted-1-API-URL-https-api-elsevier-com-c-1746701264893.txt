@@ -1,0 +1,66 @@
+1. Корневая точка API
+Используйте следующий URL для отправки запроса:
+
+https://api.elsevier.com/content/search/scopus
+2. Метод запроса
+Все запросы к Scopus API выполняются методом GET.
+
+3. Параметры запроса
+Основной параметр для фильтрации — query. В нём можно комбинировать условия с помощью операторов:
+
+AND — логическое "И",
+
+OR — логическое "ИЛИ",
+
+NOT — исключение.
+
+Примеры фильтров:
+Название статьи: TITLE("heart attack")
+
+Автор: AUTHLAST(Einstein) AND AUTHFIRST(Albert)
+
+Организация: AFFIL("University of Washington")
+
+Год публикации: PUBYEAR > 2018 AND PUBYEAR < 2020
+
+Название журнала: SRCTITLE("Nature")
+
+Квартиль журнала: В API нет прямого параметра для квартиля, но можно использовать метрики (например, SJR или SNIP) или фильтровать результаты после получения.
+
+Пример полного запроса:
+http
+https://api.elsevier.com/content/search/scopus?query=TITLE("machine learning") AND AUTHLAST(Smith) AND AFFIL("MIT") AND PUBYEAR > 2020 AND SRCTITLE("Nature")&apiKey=ВАШ_API_KEY
+4. Дополнительные параметры
+Формат ответа: Укажите httpAccept=application/json или httpAccept=application/xml.
+
+Сортировка: Используйте sort=pubyear,-title (сортировка по году публикации и названию).
+
+Пагинация: Используйте start=0 и count=25 для управления количеством результатов.
+
+5. Пример запроса с curl
+bash
+curl -X GET --header 'Accept: application/json' 'https://api.elsevier.com/content/search/scopus?query=TITLE("blockchain") AND AFFIL("Stanford") AND PUBYEAR=2023&apiKey=ВАШ_API_KEY'
+6. Обработка ответа
+Ответ будет содержать список статей с метаданными, такими как:
+
+dc:title — название статьи,
+
+dc:creator — автор,
+
+prism:publicationName — название журнала,
+
+prism:coverDate — дата публикации,
+
+citedby-count — количество цитирований.
+
+7. Важные замечания
+Квартиль журнала: Для фильтрации по квартилю потребуется дополнительная обработка данных (например, использование метрик SJR или SNIP из Serial Title API).
+
+Лимиты: Учитывайте квоты API (например, 20,000 запросов в неделю для Scopus Search API).
+
+Аутентификация: Используйте API Key, переданный в параметре apiKey или в заголовке X-ELS-APIKey.
+
+Пример полного URL с фильтрами:
+http
+https://api.elsevier.com/content/search/scopus?query=TITLE("quantum computing") AND AUTHLAST(Doe) AND AFFIL("Harvard") AND PUBYEAR=2022 AND SRCTITLE("Science")&httpAccept=application/json&apiKey=ВАШ_API_KEY
+Этот запрос вернёт статьи по квантовым вычислениям, написанные автором Doe из Гарварда, опубликованные в 2022 году в журнале Science.
